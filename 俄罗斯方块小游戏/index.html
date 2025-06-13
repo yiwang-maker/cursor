@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>俄罗斯方块网页版</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <div class="game-area">
+      <canvas id="tetris" width="300" height="600"></canvas>
+    </div>
+    <div class="sidebar">
+      <div>
+        <h3>下一个方块</h3>
+        <canvas id="next" width="120" height="120"></canvas>
+      </div>
+      <div>
+        <h3>分数</h3>
+        <div id="score">0</div>
+      </div>
+      <div>
+        <h3>操作说明</h3>
+        <ul>
+          <li>↑ 旋转</li>
+          <li>← → 左右移动</li>
+          <li>↓ 快速下落</li>
+          <li>空格 直接落到底</li>
+        </ul>
+      </div>
+      <button id="restart">重新开始</button>
+    </div>
+  </div>
+  <script src="tetris.js"></script>
+</body>
+</html> 
