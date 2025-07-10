@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Tangram - Canvas Demo</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 2em;
+        }
+        
+        canvas {
+            border: 3px solid #ddd;
+            border-radius: 10px;
+            cursor: crosshair;
+            transition: transform 0.2s ease;
+        }
+        
+        canvas:hover {
+            transform: scale(1.02);
+        }
+        
+        .info {
+            margin-top: 20px;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .controls {
+            margin-top: 15px;
+        }
+        
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            margin: 0 10px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        
+        button:hover {
+            background: #764ba2;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧩 Interactive Tangram Canvas</h1>
+        <canvas id="tangram" width="500" height="500"></canvas>
+        <div class="info">
+            <p>七巧板 - 中国古代智力游戏</p>
+            <p>Canvas API 演示项目</p>
+        </div>
+        <div class="controls">
+            <button onclick="redrawTangram()">🎨 重新绘制</button>
+            <button onclick="clearCanvas()">🧹 清空画布</button>
+            <button onclick="animateShapes()">✨ 动画效果</button>
+        </div>
+    </div>
+
+    <script>
+        // 获取Canvas元素和2D上下文
+        const canvas = document.getElementById('tangram');
+        const ctx = canvas.getContext('2d');
+        
+        // 七巧板颜色配置
+        const colors = {
+            triangle1: '#FF6B6B',    // 大三角形1 - 珊瑚红
+            triangle2: '#4ECDC4',    // 大三角形2 - 青绿色  
+            triangle3: '#45B7D1',    // 中三角形 - 天蓝色
+            triangle4: '#F9CA24',    // 小三角形1 - 金黄色
+            triangle5: '#F0932B',    // 小三角形2 - 橙色
+            square: '#6C5CE7',       // 正方形 - 紫色
+            parallelogram: '#FD79A8' // 平行四边形 - 粉色
+        };
+        
+        // 绘制七巧板的主函数
+        function drawTangram() {
+            // 清空画布
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // 设置线条样式
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = '#333';
+            
+            // 大三角形1 (左上角)
+            drawShape([
+                [100, 100],
+                [300, 100], 
+                [200, 200]
+            ], colors.triangle1);
+            
+            // 大三角形2 (右侧)
+            drawShape([
+                [300, 100],
+                [400, 200],
+                [300, 300]
+            ], colors.triangle2);
+            
+            // 中三角形 (左下)
+            drawShape([
+                [100, 300],
+                [300, 300],
+                [200, 200]
+            ], colors.triangle3);
+            
+            // 小三角形1 (右上小)
+            drawShape([
+                [300, 100],
+                [350, 150],
+                [300, 200]
+            ], colors.triangle4);
+            
+            // 小三角形2 (右下小)
+            drawShape([
+                [300, 300],
+                [350, 250],
+                [350, 350]
+            ], colors.triangle5);
+            
+            // 正方形 (中间)
+            drawShape([
+                [200, 200],
+                [250, 150],
+                [300, 200],
+                [250, 250]
+            ], colors.square);
+            
+            // 平行四边形 (底部)
+            drawShape([
+                [150, 350],
+                [250, 350],
+                [300, 300],
+                [200, 300]
+            ], colors.parallelogram);
+        }
+        
+        // 通用形状绘制函数
+        function drawShape(points, fillColor) {
+            ctx.fillStyle = fillColor;
+            ctx.beginPath();
+            ctx.moveTo(points[0][0], points[0][1]);
+            
+            for (let i = 1; i < points.length; i++) {
+                ctx.lineTo(points[i][0], points[i][1]);
+            }
+            
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+        }
+        
+        // 重新绘制函数
+        function redrawTangram() {
+            drawTangram();
+            console.log('七巧板重新绘制完成！');
+        }
+        
+        // 清空画布函数
+        function clearCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            console.log('画布已清空！');
+        }
+        
+        // 动画效果函数
+        function animateShapes() {
+            let frame = 0;
+            const maxFrames = 60;
+            
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                // 计算旋转角度
+                const rotation = (frame / maxFrames) * Math.PI * 2;
+                
+                // 保存当前变换状态
+                ctx.save();
+                
+                // 移动到画布中心并旋转
+                ctx.translate(canvas.width / 2, canvas.height / 2);
+                ctx.rotate(rotation);
+                ctx.translate(-canvas.width / 2, -canvas.height / 2);
+                
+                // 绘制七巧板
+                drawTangram();
+                
+                // 恢复变换状态
+                ctx.restore();
+                
+                frame++;
+                if (frame < maxFrames) {
+                    requestAnimationFrame(animate);
+                } else {
+                    // 动画结束，绘制最终状态
+                    drawTangram();
+                }
+            }
+            
+            animate();
+        }
+        
+        // 鼠标交互功能
+        let isDrawing = false;
+        let lastX = 0;
+        let lastY = 0;
+        
+        canvas.addEventListener('mousedown', (e) => {
+            isDrawing = true;
+            const rect = canvas.getBoundingClientRect();
+            lastX = e.clientX - rect.left;
+            lastY = e.clientY - rect.top;
+        });
+        
+        canvas.addEventListener('mousemove', (e) => {
+            if (!isDrawing) return;
+            
+            const rect = canvas.getBoundingClientRect();
+            const currentX = e.clientX - rect.left;
+            const currentY = e.clientY - rect.top;
+            
+            // 绘制自由线条
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(lastX, lastY);
+            ctx.lineTo(currentX, currentY);
+            ctx.stroke();
+            
+            lastX = currentX;
+            lastY = currentY;
+        });
+        
+        canvas.addEventListener('mouseup', () => {
+            isDrawing = false;
+        });
+        
+        // 页面加载完成后自动绘制七巧板
+        window.addEventListener('load', () => {
+            drawTangram();
+            console.log('🎨 Canvas七巧板项目启动成功！');
+            console.log('🧩 您可以点击按钮体验不同功能');
+        });
+    </script>
+</body>
+</html>
